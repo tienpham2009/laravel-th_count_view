@@ -23,6 +23,7 @@
 
                         <!-- Nút XEM chuyển hướng người dùng quay lại trang danh sách sản phẩm -->
                         <a href="{{ route('index') }}" class="btn btn-primary">< Quay lại </a>
+                        <a href="{{ route('cart' , [ 'id' => $product->id] )}}" class="btn btn-primary">Mua</a>
                     </div>
                 </div>
             </div>

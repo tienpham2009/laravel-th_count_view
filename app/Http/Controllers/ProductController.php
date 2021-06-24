@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use function Symfony\Component\String\s;
 
 class ProductController extends Controller
 {
     function index()
     {
         $products = Product::all();
-        return view('index' , compact('products'));
+        return view('index', compact('products'));
     }
 
     function show($id)
@@ -32,4 +33,80 @@ class ProductController extends Controller
         // Trả về view
         return view('show', compact('product'));
     }
+
+    function cart($id)
+    {
+
+        $product = Product::findOrFail($id);
+        $cart = session()->get('cart');
+
+        if (!$cart) {
+            $cart =
+                [
+                    $id =>
+                        [
+                            'name' => $product->name,
+                            'quantity' => 1,
+                            'description' => $product->description,
+                            'price' => $product->price
+                        ]
+                ];
+
+            session()->put('cart', $cart);
+
+        }else if (isset( $cart[$id])){
+            $cart[$id]['quantity']++;
+            session()->put('cart' , $cart);
+        }else{
+            $cart[$id] =
+                [
+                    'name' => $product->name,
+                    'quantity' => 1,
+                    'description' => $product->description,
+                    'price' => $product->price
+                ];
+
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->route('show-cart');
+
+    }
+
+
+    function destroyCart(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        if (isset($request->key)){
+            $keys = $request->input('key');
+            $cart = session()->get('cart');
+
+            foreach ($keys as $key) {
+                if (isset($cart[$key])) {
+                    unset($cart[$key]);
+                    session()->put('cart', $cart);
+                }
+            }
+        }
+
+        return redirect()->route('show-cart');
+    }
+
+    function updateCart(Request $request)
+    {;
+        if($request->id and $request->quantity)
+        {
+            $cart = session()->get('cart');
+            $cart[$request->id]["quantity"] = $request->quantity;
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->route('show-cart');
+    }
+
+    function showCart()
+    {
+        return view('cart');
+    }
+
+
 }
