@@ -36,10 +36,8 @@ class ProductController extends Controller
 
     function cart($id)
     {
-
         $product = Product::findOrFail($id);
         $cart = session()->get('cart');
-
         if (!$cart) {
             $cart =
                 [
@@ -48,22 +46,24 @@ class ProductController extends Controller
                             'name' => $product->name,
                             'quantity' => 1,
                             'description' => $product->description,
-                            'price' => $product->price
+                            'price' => $product->price,
+                            'total'=>$product->price
                         ]
                 ];
 
             session()->put('cart', $cart);
 
-        }else if (isset( $cart[$id])){
+        } else if (isset($cart[$id])) {
             $cart[$id]['quantity']++;
-            session()->put('cart' , $cart);
-        }else{
+            session()->put('cart', $cart);
+        } else {
             $cart[$id] =
                 [
                     'name' => $product->name,
                     'quantity' => 1,
                     'description' => $product->description,
-                    'price' => $product->price
+                    'price' => $product->price,
+                    'total'=>$product->price
                 ];
 
             session()->put('cart', $cart);
@@ -76,7 +76,7 @@ class ProductController extends Controller
 
     function destroyCart(Request $request): \Illuminate\Http\RedirectResponse
     {
-        if (isset($request->key)){
+        if (isset($request->key)) {
             $keys = $request->input('key');
             $cart = session()->get('cart');
 
@@ -92,11 +92,12 @@ class ProductController extends Controller
     }
 
     function updateCart(Request $request)
-    {;
-        if($request->id and $request->quantity)
-        {
+    {
+        ;
+        if ($request->id && $request->quantity) {
             $cart = session()->get('cart');
             $cart[$request->id]["quantity"] = $request->quantity;
+            $cart[$request->id]['total'] = $request->total;
             session()->put('cart', $cart);
         }
 

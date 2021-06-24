@@ -32,11 +32,12 @@
                     <th scope="col">Name</th>
                     <th scope="col">Description</th>
                     <th scope="col">price</th>
+                    <th>total</th>
                     <th>amount</th>
-                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
+<!--                --><?php //dd(session()->get('cart')); ?>
                 @foreach(session()->get('cart') as $key => $cart)
                     <tr>
                         <td><input type="checkbox" value="{{ $key }}" name="key[]"></td>
@@ -44,10 +45,11 @@
                         <td>{{ $cart['name']}}</td>
                         <td>{{ $cart['description'] }}</td>
                         <td>{{ $cart['price'] }}</td>
+                        <td>{{$cart['total']}}</td>
                         <td>
-                            <a href="{{ route('update-cart' , ['quantity' => ($cart['quantity'] - 1) , 'id' => $key]) }}">-</a>
+                            <a href="{{ route('update-cart' , ['quantity' => ($cart['quantity'] - 1) , 'id' => $key , 'total' => (($cart['quantity'] - 1) * $cart['price'])]) }}">-</a>
                             {{ $cart['quantity'] }}
-                            <a href="{{ route('update-cart' , ['quantity' => ($cart['quantity'] + 1) , 'id' => $key]) }}">+</a>
+                            <a href="{{ route('update-cart' , ['quantity' => ($cart['quantity'] + 1) , 'id' => $key ,  'total' => (($cart['quantity'] + 1) * $cart['price'])]) }}">+</a>
                         </td>
                     </tr>
                 @endforeach
